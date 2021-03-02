@@ -1,0 +1,21 @@
+service:
+  name: weather-serverless
+
+plugins:
+  - serverless-bundle
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  
+functions:
+  getWeather:
+    handler: src/handlers/getWeather.handler
+    events:
+      - http:
+          method: GET
+          path: /getWeather

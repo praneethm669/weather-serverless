@@ -1,2 +1,5 @@
-# weather-serverless
-Simple weather application using serverless
+# build
+npm install
+
+# deployment steps 
+sls deploy -v
