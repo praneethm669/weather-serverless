@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-bundle
   - serverless-pseudo-parameters
+  - serverless-offline
 
 provider:
   name: aws
@@ -33,3 +34,8 @@ functions:
       - http:
           method: GET
           path: /getWeather
+          request:
+            parameters:
+              querystrings:
+                zip: true
+        
