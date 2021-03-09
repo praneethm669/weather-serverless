@@ -1,6 +1,12 @@
+import { v4 as uuid } from 'uuid';
+import AWS from 'aws-sdk';
+
 const got = require('got');
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getWeather(event, context) {
+
+  const now = new Date();
 
   console.log(event.queryStringParameters.zip);
 
@@ -13,12 +19,21 @@ async function getWeather(event, context) {
   });
   console.log(response);
   const parsedRes = JSON.parse(response.body);
+  const weatherReport = {
+    id: uuid(),
+    temp: `${(parsedRes.main.temp)}`,
+    zipcode: `${zip}`,
+    requestedAt: now.toISOString().slice(0, 10),
+  };
+
+  await dynamodb.put({
+    TableName: 'WeatherTable',
+    Item: weatherReport,
+  }).promise();
+
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      Temp: `Current Temperature is : ${(parsedRes.main.temp)}`,
-      Zipcode: `Zipcode is ${zip}`
-    })
+    body: JSON.stringify(weatherReport),
   };
 }
 
