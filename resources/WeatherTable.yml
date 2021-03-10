@@ -6,6 +6,16 @@ WeatherTable:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: zipcode
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: zipcode
+            KeySchema: 
+              - AttributeName: zipcode
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        
