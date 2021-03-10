@@ -12,27 +12,15 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
+  environment:
+    WEATHER_TABLE_NAME: ${self:custom.WeatherTable.name}
   iamRoleStatements:
-    - Effect: Allow
-      Action: 
-        - dynamodb:PutItem
-      Resource:
-        - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId }:table/WeatherTable
+    - ${file(iam/WeatherTableIAM.yml):WeatherTableIAM}
 
 resources:
   Resources:
-    WeatherTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: WeatherTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-
+    WeatherTable: ${file(resources/WeatherTable.yml):WeatherTable}
+    
 functions:
   getWeather:
     handler: src/handlers/getWeather.handler
@@ -44,4 +32,19 @@ functions:
             parameters:
               querystrings:
                 zip: true
+  getWeatherReport:
+    handler: src/handlers/getWeatherReport.handler
+    events:
+      - http:
+          method: GET
+          path: /getWeatherReport
+          request:
+            parameters:
+              querystrings:
+                zip: true
+
+custom:
+  WeatherTable:
+    name: !Ref WeatherTable
+    arn: !GetAtt WeatherTable.Arn
         
