@@ -7,13 +7,20 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 async function getWeatherReport(event, context) {
 
   let report;
-  //const zip = event.queryStringParameters.zip;
+  const zip = event.queryStringParameters.zip;
+
+  const params = {
+    TableName: process.env.WEATHER_TABLE_NAME,
+    IndexName: 'zipcode',
+    KeyConditionExpression: 'zipcode = :zip',
+    ExpressionAttributeValues: {
+      ':zip': zip,
+    },
+  };
 
 
   try {
-    const result = await dynamodb.scan({
-      TableName: process.env.WEATHER_TABLE_NAME,
-    }).promise();
+    const result = await dynamodb.query(params).promise();
     report = result.Items;
   }
   catch (error) {

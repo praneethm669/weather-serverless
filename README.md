@@ -15,4 +15,8 @@ GET - https://41ftpuimq0.execute-api.eu-west-1.amazonaws.com/dev/getWeather
 
 
 example:
+
 https://41ftpuimq0.execute-api.eu-west-1.amazonaws.com/dev/getWeather?zip=94040
+
+
+https://41ftpuimq0.execute-api.eu-west-1.amazonaws.com/dev/getWeatherReport?zip=77001
