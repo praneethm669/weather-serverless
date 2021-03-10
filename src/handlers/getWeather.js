@@ -1,5 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import AWS from 'aws-sdk';
+import commonMiddleware from '../lib/commonMiddleware';
+import createError from 'http-errors';
 
 const got = require('got');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -23,13 +25,21 @@ async function getWeather(event, context) {
     id: uuid(),
     temp: `${(parsedRes.main.temp)}`,
     zipcode: `${zip}`,
-    requestedAt: now.toISOString().slice(0, 10),
+    //requestedAt: now.toISOString().slice(0, 10),
+    requestedAt: now.toISOString(),
   };
 
-  await dynamodb.put({
-    TableName: 'WeatherTable',
-    Item: weatherReport,
-  }).promise();
+  try {
+    await dynamodb.put({
+      TableName: process.env.WEATHER_TABLE_NAME,
+      Item: weatherReport,
+    }).promise();
+  }
+  catch (error) {
+    console.log(error);
+    throw new createError.InternalServerError(error);
+
+  }
 
   return {
     statusCode: 200,
@@ -37,6 +47,5 @@ async function getWeather(event, context) {
   };
 }
 
-export const handler = getWeather;
-
+export const handler = commonMiddleware(getWeather);
 
